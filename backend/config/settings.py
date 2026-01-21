@@ -7,72 +7,113 @@ load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
-# SECURITY WARNING: keep the secret key used in production secret!
+# -----------------------------
+# SECURITY
+# -----------------------------
 SECRET_KEY = os.getenv("SECRET_KEY", "django-secret-key")
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv("DEBUG", "True") == "True"
+DEBUG = os.getenv("DEBUG", "False") == "True"
 
-ALLOWED_HOSTS = ["*"]  # dev only
+# Render backend domain + localhost
+ALLOWED_HOSTS = [
+    "localhost",
+    "127.0.0.1",
+    os.getenv("RENDER_EXTERNAL_HOSTNAME", ""),  # auto from Render
+]
 
+# Remove empty string if not set
+ALLOWED_HOSTS = [h for h in ALLOWED_HOSTS if h]
 
-# Application definition
+# -----------------------------
+# FRONTEND URL (Vercel)
+# -----------------------------
+FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:3000")
+
+# -----------------------------
+# APPLICATIONS
+# -----------------------------
 INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
 
     # Third-party apps
-    'rest_framework',
-    'corsheaders',
+    "rest_framework",
+    "corsheaders",
 
     # Your apps
-    'accounts',
-    'quiz',
+    "accounts",
+    "quiz",
 ]
 
-
+# -----------------------------
+# MIDDLEWARE
+# -----------------------------
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',  # must be on top
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "corsheaders.middleware.CorsMiddleware",  # must be on top
+    "django.middleware.security.SecurityMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
+# -----------------------------
+# CORS + CSRF (IMPORTANT for Vercel)
+# -----------------------------
+CORS_ALLOW_ALL_ORIGINS = False
 
-# Allow Next.js frontend to call backend APIs
-CORS_ALLOW_ALL_ORIGINS = True  # dev only
+CORS_ALLOWED_ORIGINS = [
+    FRONTEND_URL,
+]
 
+CSRF_TRUSTED_ORIGINS = [
+    FRONTEND_URL,
+]
 
-ROOT_URLCONF = 'config.urls'
+# Allow Authorization header for JWT
+CORS_ALLOW_HEADERS = [
+    "accept",
+    "accept-encoding",
+    "authorization",
+    "content-type",
+    "dnt",
+    "origin",
+    "user-agent",
+    "x-csrftoken",
+    "x-requested-with",
+]
+
+# -----------------------------
+# URL + TEMPLATES
+# -----------------------------
+ROOT_URLCONF = "config.urls"
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
             ],
         },
     },
 ]
 
-WSGI_APPLICATION = 'config.wsgi.application'
+WSGI_APPLICATION = "config.wsgi.application"
 
-
-# Database (Supabase PostgreSQL Transaction Pooler)
+# -----------------------------
+# DATABASE (Supabase PostgreSQL Transaction Pooler)
+# -----------------------------
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
@@ -81,14 +122,13 @@ DATABASES = {
         "PASSWORD": os.getenv("DB_PASSWORD"),
         "HOST": os.getenv("DB_HOST"),
         "PORT": os.getenv("DB_PORT"),
-        "OPTIONS": {
-            "sslmode": "require",
-        },
+        "OPTIONS": {"sslmode": "require"},
     }
 }
 
-
-# Django REST Framework (JWT)
+# -----------------------------
+# DJANGO REST FRAMEWORK (JWT)
+# -----------------------------
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
@@ -98,41 +138,42 @@ REST_FRAMEWORK = {
     ),
 }
 
-
-# JWT Token settings
+# -----------------------------
+# JWT SETTINGS
+# -----------------------------
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
     "AUTH_HEADER_TYPES": ("Bearer",),
 }
 
-
-# Password validation
+# -----------------------------
+# PASSWORD VALIDATION
+# -----------------------------
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
+    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
+    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
+    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
 
-
-# Internationalization
-LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'UTC'
+# -----------------------------
+# INTERNATIONALIZATION
+# -----------------------------
+LANGUAGE_CODE = "en-us"
+TIME_ZONE = "UTC"
 USE_I18N = True
 USE_TZ = True
 
+# -----------------------------
+# STATIC FILES (Render needs this)
+# -----------------------------
+STATIC_URL = "static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
-# Static files (CSS, JavaScript, Images)
-STATIC_URL = 'static/'
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+# -----------------------------
+# Render proxy support (important)
+# -----------------------------
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
