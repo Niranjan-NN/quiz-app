@@ -1,0 +1,84 @@
+# =========================
+# Django / Python
+# =========================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.sqlite3
+*.log
+
+# Django migrations cache
+**/migrations/__pycache__/
+
+# =========================
+# Virtual Environment
+# =========================
+venv/
+env/
+.venv/
+ENV/
+env.bak/
+venv.bak/
+
+# =========================
+# Environment Variables
+# =========================
+.env
+.env.local
+.env.production
+.env.development
+
+# =========================
+# Static & Media
+# =========================
+staticfiles/
+static/
+media/
+
+# =========================
+# Django Collectstatic output
+# =========================
+*.static
+
+# =========================
+# IDE / Editor
+# =========================
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# =========================
+# OS Files
+# =========================
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# =========================
+# Test / Coverage
+# =========================
+.coverage
+htmlcov/
+pytest_cache/
+.tox/
+
+# =========================
+# Build / Distribution
+# =========================
+build/
+dist/
+*.egg-info/
+
+# =========================
+# Node (if accidentally present)
+# =========================
+node_modules/
+
+# =========================
+# Secrets / Keys
+# =========================
+*.pem
+*.key
