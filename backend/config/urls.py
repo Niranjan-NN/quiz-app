@@ -7,6 +7,7 @@ def home(request):
     return JsonResponse({"message": "Quiz API is running 🚀"})
 
 urlpatterns = [
+    path("", home),
     path("admin/", admin.site.urls),
 
     path("api/auth/", include("accounts.urls")),
