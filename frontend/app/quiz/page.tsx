@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   ArrowLeft,
@@ -20,7 +20,7 @@ type QuizQuestion = {
   answer: string;
 };
 
-export default function QuizPage() {
+function QuizPageInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -43,7 +43,7 @@ export default function QuizPage() {
     null
   );
 
-  
+  // ✅ Load Retake Mode from localStorage
   useEffect(() => {
     const mode = searchParams.get("mode");
 
@@ -74,7 +74,6 @@ export default function QuizPage() {
     }
   }, [searchParams]);
 
-  
   async function handleCreateQuiz() {
     if (!topic.trim()) {
       setError("Please enter a topic.");
@@ -117,7 +116,6 @@ export default function QuizPage() {
     }));
   }
 
-  
   async function handleSubmitQuiz() {
     if (questions.length === 0) return;
 
@@ -127,9 +125,10 @@ export default function QuizPage() {
 
     setError("");
 
-    
+    // ✅ Retake (local) submit logic
     if (quizId === "retake-local") {
       let score = 0;
+
       for (const q of questions) {
         const selected = selectedAnswers[q.id];
         if (selected && selected === q.answer) score++;
@@ -142,7 +141,7 @@ export default function QuizPage() {
       return;
     }
 
-    
+    // ✅ Normal submit (backend)
     if (!quizId) return;
 
     try {
@@ -399,5 +398,23 @@ export default function QuizPage() {
         )}
       </div>
     </div>
+  );
+}
+
+/**
+ * ✅ FIX FOR VERCEL BUILD
+ * useSearchParams() must be wrapped inside Suspense
+ */
+export default function QuizPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+          <p className="text-slate-500 font-medium">Loading Quiz...</p>
+        </div>
+      }
+    >
+      <QuizPageInner />
+    </Suspense>
   );
 }
