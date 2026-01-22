@@ -37,7 +37,7 @@ This is a fullstack **AI-powered Quiz Application** where users can:
 
 # 📁 Project Structure
 
-```
+```bash
 
 quiz-app/
 │
